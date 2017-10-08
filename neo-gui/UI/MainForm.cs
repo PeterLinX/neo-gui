@@ -73,10 +73,9 @@ namespace Neo.UI
                             BigInteger _amountRefund = arr[2].GetBigInteger();
                             BigDecimal amountRefund = new BigDecimal(_amountRefund, asset.Precision);
                             string msgRefund1 = "scriptHash: " + args.ScriptHash.ToString() + "\r\n";
-                            string msgRefund2 = "address: " + Wallet.ToAddress(args.ScriptHash) + "\r\n";
-                            string msgRefund3 = "account: " + accountScriptHash.ToHexString() + "\r\n";
-                            string msgRefund4 = "amount: " + amountRefund.ToString() + "\r\n" + "\r\n";
-                            string msgRefund = msgRefund1 + msgRefund2 + msgRefund3 + msgRefund4;
+                            string msgRefund2 = "address: " + Wallet.ToAddress(UInt160.Parse(accountScriptHash.Reverse().ToHexString())) + "\r\n";
+                            string msgRefund3 = "amount: " + amountRefund.ToString() + "\r\n" + "\r\n";
+                            string msgRefund = msgRefund1 + msgRefund2 + msgRefund3;
                             byte[] refundByte = Encoding.UTF8.GetBytes(msgRefund);
                             using (FileStream fsWrite = new FileStream(filePath + "/refund.txt", FileMode.Append))
                             {
@@ -94,7 +93,7 @@ namespace Neo.UI
                             }
                             else
                             {
-                                strFromScriptHash = Wallet.ToAddress(UInt160.Parse(_fromScriptHash.ToHexString()));
+                                strFromScriptHash = Wallet.ToAddress(UInt160.Parse(_fromScriptHash.Reverse().ToHexString()));
                             }
 
                             if (isByteEmpty(_toScriptHash))
@@ -103,7 +102,7 @@ namespace Neo.UI
                             }
                             else
                             {
-                                strToScriptHash = Wallet.ToAddress(UInt160.Parse(_toScriptHash.ToHexString()));
+                                strToScriptHash = Wallet.ToAddress(UInt160.Parse(_toScriptHash.Reverse().ToHexString()));
                             }
                             BigDecimal amountTransfer = new BigDecimal(_amountTransfer, asset.Precision);
                             string msgTransfer1 = "txid: " + txid + "\r\n";
