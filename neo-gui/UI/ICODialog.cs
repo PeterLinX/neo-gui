@@ -256,7 +256,7 @@ namespace Neo.UI
             if (!engine.State.HasFlag(VMState.FAULT))
             {
                 BigInteger _balance = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal balance = new BigDecimal(_balance, asset.Precision);
+                BigDecimal balance = new BigDecimal(_balance, asset.Decimals);
                 this.textBox7.Text = balance.ToString();
             }
             else
@@ -282,7 +282,7 @@ namespace Neo.UI
             if (!engine.State.HasFlag(VMState.FAULT))
             {
                 BigInteger _totalIcoNeo = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Precision);
+                BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Decimals);
                 this.textBox8.Text = totalIcoNeo.ToString();
             }
             else
@@ -309,7 +309,7 @@ namespace Neo.UI
             if (!engine.State.HasFlag(VMState.FAULT))
             {
                 BigInteger _icoNeo = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Precision);
+                BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Decimals);
                 this.textBox9.Text = icoNeo.ToString();
             }
             else
