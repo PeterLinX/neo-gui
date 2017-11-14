@@ -9,5 +9,7 @@ namespace Neo.UI
             InitializeComponent();
             InitializeTxBuilder();
         }
+
+        
     }
 }

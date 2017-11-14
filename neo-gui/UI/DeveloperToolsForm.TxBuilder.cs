@@ -3,6 +3,7 @@ using Neo.Properties;
 using Neo.SmartContract;
 using Neo.UI.Wrappers;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -77,15 +78,33 @@ namespace Neo.UI
         private void button7_Click(object sender, EventArgs e)
         {
             TransactionWrapper wrapper = (TransactionWrapper)propertyGrid1.SelectedObject;
-            Transaction tx = Program.CurrentWallet.MakeTransaction(wrapper.Unwrap());
-            if (tx == null)
+            string typeName = wrapper.GetType().Name;
+            if (typeName == "ClaimTransactionWrapper")
             {
-                MessageBox.Show(Strings.InsufficientFunds);
+                CoinReference[] claims = Program.CurrentWallet.GetUnclaimedCoins().Select(p => p.Reference).ToArray();
+                if (claims.Length == 0) return;
+                ClaimTransactionWrapper tx = (ClaimTransactionWrapper)wrapper;
+                for (int i = 0; i < claims.Length; i++)
+                {
+                    tx.Claims.Add(new CoinReferenceWrapper
+                    {
+                        PrevIndex = claims[i].PrevIndex,
+                        PrevHash = claims[i].PrevHash
+                    });
+                }
             }
             else
             {
-                wrapper.Inputs = tx.Inputs.Select(p => CoinReferenceWrapper.Wrap(p)).ToList();
-                wrapper.Outputs = tx.Outputs.Select(p => TransactionOutputWrapper.Wrap(p)).ToList();
+                Transaction tx = Program.CurrentWallet.MakeTransaction(wrapper.Unwrap());
+                if (tx == null)
+                {
+                    MessageBox.Show(Strings.InsufficientFunds);
+                }
+                else
+                {
+                    wrapper.Inputs = tx.Inputs.Select(p => CoinReferenceWrapper.Wrap(p)).ToList();
+                    wrapper.Outputs = tx.Outputs.Select(p => TransactionOutputWrapper.Wrap(p)).ToList();
+                }
             }
         }
 
@@ -95,5 +114,7 @@ namespace Neo.UI
             ContractParametersContext context = new ContractParametersContext(wrapper.Unwrap());
             InformationBox.Show(context.ToString(), "ParametersContext", "ParametersContext");
         }
+
+
     }
 }
