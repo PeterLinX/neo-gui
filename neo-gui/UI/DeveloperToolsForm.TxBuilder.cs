@@ -2,6 +2,7 @@ using Neo.Core;
 using Neo.Properties;
 using Neo.SmartContract;
 using Neo.UI.Wrappers;
+using Neo.Wallets;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -77,15 +78,43 @@ namespace Neo.UI
         private void button7_Click(object sender, EventArgs e)
         {
             TransactionWrapper wrapper = (TransactionWrapper)propertyGrid1.SelectedObject;
-            Transaction tx = Program.CurrentWallet.MakeTransaction(wrapper.Unwrap());
-            if (tx == null)
+            string typeName = wrapper.GetType().Name;
+            if (typeName == "ClaimTransactionWrapper")
             {
-                MessageBox.Show(Strings.InsufficientFunds);
+                Coin[] coins = Program.CurrentWallet.GetUnclaimedCoins().ToArray();
+                if (coins.Length == 0) return;
+                CoinReference[] claims;
+                if (coins.Length >= 5000)
+                {
+                    claims = coins.Take(5000).Select(p => p.Reference).ToArray();
+                }
+                else {
+                    claims = coins.Select(p => p.Reference).ToArray();
+                }
+                Fixed8 bonus_available = Blockchain.CalculateBonus(claims);
+                ClaimTransactionWrapper tx = (ClaimTransactionWrapper)wrapper;
+                for (int i = 0; i < 5000; i++)
+                {
+                    tx.Claims.Add(new CoinReferenceWrapper
+                    {
+                        PrevIndex = claims[i].PrevIndex,
+                        PrevHash = claims[i].PrevHash
+                    });
+                }
+                MessageBox.Show(bonus_available.ToString(), "Claim Gas");
             }
             else
             {
-                wrapper.Inputs = tx.Inputs.Select(p => CoinReferenceWrapper.Wrap(p)).ToList();
-                wrapper.Outputs = tx.Outputs.Select(p => TransactionOutputWrapper.Wrap(p)).ToList();
+                Transaction tx = Program.CurrentWallet.MakeTransaction(wrapper.Unwrap());
+                if (tx == null)
+                {
+                    MessageBox.Show(Strings.InsufficientFunds);
+                }
+                else
+                {
+                    wrapper.Inputs = tx.Inputs.Select(p => CoinReferenceWrapper.Wrap(p)).ToList();
+                    wrapper.Outputs = tx.Outputs.Select(p => TransactionOutputWrapper.Wrap(p)).ToList();
+                }
             }
         }
 
