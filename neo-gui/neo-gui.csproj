@@ -377,18 +377,6 @@
     <Compile Include="UI\ImportPrivateKeyDialog.designer.cs">
       <DependentUpon>ImportPrivateKeyDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\InflationRateDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\InflationRateDialog.Designer.cs">
-      <DependentUpon>InflationRateDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\InflationStartTimeDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\InflationStartTimeDialog.Designer.cs">
-      <DependentUpon>InflationStartTimeDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -728,12 +716,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ImportPrivateKeyDialog.zh-Hans.resx">
       <DependentUpon>ImportPrivateKeyDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\InflationRateDialog.resx">
-      <DependentUpon>InflationRateDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\InflationStartTimeDialog.resx">
-      <DependentUpon>InflationStartTimeDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\InformationBox.es-ES.resx">
       <DependentUpon>InformationBox.cs</DependentUpon>

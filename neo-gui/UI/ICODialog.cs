@@ -181,29 +181,6 @@ namespace Neo.UI
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            string scriptHash = Settings.Default.NEP5Watched.OfType<string>().ToArray()[0];
-            UInt160 script_hash = UInt160.Parse(scriptHash);
-
-            byte[] script;
-            using (ScriptBuilder sb = new ScriptBuilder())
-            {
-                sb.EmitAppCall(script_hash, "queryInflationRate");
-                script = sb.ToArray();
-            }
-            ApplicationEngine engine = ApplicationEngine.Run(script);
-
-            if (!engine.State.HasFlag(VMState.FAULT))
-            {
-                BigInteger iRate = engine.EvaluationStack.Pop().GetBigInteger();
-                this.textBox5.Text = iRate.ToString();
-            }
-            else
-            {
-                MessageBox.Show("Query Failed");
-            }
-        }
 
         public static System.DateTime ConvertIntDateTime(double d)
         {
@@ -213,29 +190,6 @@ namespace Neo.UI
             return time;
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            string scriptHash = Settings.Default.NEP5Watched.OfType<string>().ToArray()[0];
-            UInt160 script_hash = UInt160.Parse(scriptHash);
-
-            byte[] script;
-            using (ScriptBuilder sb = new ScriptBuilder())
-            {
-                sb.EmitAppCall(script_hash, "queryInflationStartTime");
-                script = sb.ToArray();
-            }
-            ApplicationEngine engine = ApplicationEngine.Run(script);
-            if (!engine.State.HasFlag(VMState.FAULT))
-            {
-                BigInteger startTime = engine.EvaluationStack.Pop().GetBigInteger();
-
-                this.textBox6.Text = ConvertIntDateTime((double)startTime).ToString();
-            }
-            else
-            {
-                MessageBox.Show("Query Failed");
-            }
-        }
 
         private void button5_Click(object sender, EventArgs e)
         {

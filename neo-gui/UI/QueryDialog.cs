@@ -74,16 +74,6 @@ namespace Neo.UI
                 BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Decimals);
                 this.txtbx_totalIcoNeo.Text = totalIcoNeo.ToString();
 
-                //queryInflationStartTime
-                BigInteger startTime = engine.EvaluationStack.Pop().GetBigInteger();
-                this.txtbx_infStartTime.Text = ConvertIntDateTime((double)startTime).ToString();
-
-                //queryInflationRate
-                BigInteger iRate = engine.EvaluationStack.Pop().GetBigInteger();
-                double dividend = 1000000000000;
-                double result = (double)iRate/dividend;
-                this.txtbx_inflationRate.Text = result.ToString();
-
                 //totalSupply
                 BigInteger _totalSupply = engine.EvaluationStack.Pop().GetBigInteger();
                 BigDecimal totalSupply = new BigDecimal(_totalSupply, asset.Decimals);

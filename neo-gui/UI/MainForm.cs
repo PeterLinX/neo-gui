@@ -1183,26 +1183,7 @@ namespace Neo.UI
                         tx = dialog.GetTransaction();
                     }
                     break;
-                case "inflation":
-                    tx = commandMethod(scriptHash, "inflation");
-                    break;
-                case "inflationRate":
-                    using (InflationRateDialog dialog = new InflationRateDialog(scriptHash))
-                    {
-                        if (dialog.ShowDialog() != DialogResult.OK) return;
-                        tx = dialog.GetTransaction();
-                    }
-                    break;
-                case "inflationStartTime":
-                    using (InflationStartTimeDialog dialog = new InflationStartTimeDialog(scriptHash))
-                    {
-                        if (dialog.ShowDialog() != DialogResult.OK) return;
-                        tx = dialog.GetTransaction();
-                    }
-                    break;
-                case "inner":
-                    tx = commandMethod(scriptHash, "inner");
-                    break;
+                
                 default:
                     tx = null;
                     break;

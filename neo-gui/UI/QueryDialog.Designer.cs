@@ -40,22 +40,18 @@
             this.txtbx_symbol = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtbx_totalSupply = new System.Windows.Forms.TextBox();
-            this.txtbx_inflationRate = new System.Windows.Forms.TextBox();
             this.txtbx_icoNeo = new System.Windows.Forms.TextBox();
             this.txtbx_totalIcoNeo = new System.Windows.Forms.TextBox();
-            this.txtbx_infStartTime = new System.Windows.Forms.TextBox();
             this.Query = new System.Windows.Forms.Button();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.CheckBalance = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtbx_address = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
             this.txtbx_balance = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txtbx_address = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.CheckBalance = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -91,13 +87,9 @@
             this.groupBox2.Controls.Add(this.txtbx_symbol);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtbx_totalSupply);
-            this.groupBox2.Controls.Add(this.txtbx_inflationRate);
             this.groupBox2.Controls.Add(this.txtbx_icoNeo);
             this.groupBox2.Controls.Add(this.txtbx_totalIcoNeo);
-            this.groupBox2.Controls.Add(this.txtbx_infStartTime);
             this.groupBox2.Controls.Add(this.Query);
-            this.groupBox2.Controls.Add(this.label8);
-            this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label7);
@@ -144,12 +136,6 @@
             this.txtbx_totalSupply.Name = "txtbx_totalSupply";
             this.txtbx_totalSupply.ReadOnly = true;
             // 
-            // txtbx_inflationRate
-            // 
-            resources.ApplyResources(this.txtbx_inflationRate, "txtbx_inflationRate");
-            this.txtbx_inflationRate.Name = "txtbx_inflationRate";
-            this.txtbx_inflationRate.ReadOnly = true;
-            // 
             // txtbx_icoNeo
             // 
             resources.ApplyResources(this.txtbx_icoNeo, "txtbx_icoNeo");
@@ -162,28 +148,12 @@
             this.txtbx_totalIcoNeo.Name = "txtbx_totalIcoNeo";
             this.txtbx_totalIcoNeo.ReadOnly = true;
             // 
-            // txtbx_infStartTime
-            // 
-            resources.ApplyResources(this.txtbx_infStartTime, "txtbx_infStartTime");
-            this.txtbx_infStartTime.Name = "txtbx_infStartTime";
-            this.txtbx_infStartTime.ReadOnly = true;
-            // 
             // Query
             // 
             resources.ApplyResources(this.Query, "Query");
             this.Query.Name = "Query";
             this.Query.UseVisualStyleBackColor = true;
             this.Query.Click += new System.EventHandler(this.Query_Click);
-            // 
-            // label8
-            // 
-            resources.ApplyResources(this.label8, "label8");
-            this.label8.Name = "label8";
-            // 
-            // label6
-            // 
-            resources.ApplyResources(this.label6, "label6");
-            this.label6.Name = "label6";
             // 
             // label5
             // 
@@ -211,33 +181,33 @@
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.TabStop = false;
             // 
-            // CheckBalance
+            // txtbx_balance
             // 
-            resources.ApplyResources(this.CheckBalance, "CheckBalance");
-            this.CheckBalance.Name = "CheckBalance";
-            this.CheckBalance.UseVisualStyleBackColor = true;
-            this.CheckBalance.Click += new System.EventHandler(this.CheckBalance_Click);
-            // 
-            // label10
-            // 
-            resources.ApplyResources(this.label10, "label10");
-            this.label10.Name = "label10";
-            // 
-            // txtbx_address
-            // 
-            resources.ApplyResources(this.txtbx_address, "txtbx_address");
-            this.txtbx_address.Name = "txtbx_address";
+            resources.ApplyResources(this.txtbx_balance, "txtbx_balance");
+            this.txtbx_balance.Name = "txtbx_balance";
+            this.txtbx_balance.ReadOnly = true;
             // 
             // label11
             // 
             resources.ApplyResources(this.label11, "label11");
             this.label11.Name = "label11";
             // 
-            // txtbx_balance
+            // txtbx_address
             // 
-            resources.ApplyResources(this.txtbx_balance, "txtbx_balance");
-            this.txtbx_balance.Name = "txtbx_balance";
-            this.txtbx_balance.ReadOnly = true;
+            resources.ApplyResources(this.txtbx_address, "txtbx_address");
+            this.txtbx_address.Name = "txtbx_address";
+            // 
+            // label10
+            // 
+            resources.ApplyResources(this.label10, "label10");
+            this.label10.Name = "label10";
+            // 
+            // CheckBalance
+            // 
+            resources.ApplyResources(this.CheckBalance, "CheckBalance");
+            this.CheckBalance.Name = "CheckBalance";
+            this.CheckBalance.UseVisualStyleBackColor = true;
+            this.CheckBalance.Click += new System.EventHandler(this.CheckBalance_Click);
             // 
             // QueryDialog
             // 
@@ -265,13 +235,9 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtbx_totalSupply;
-        private System.Windows.Forms.TextBox txtbx_inflationRate;
         private System.Windows.Forms.TextBox txtbx_icoNeo;
         private System.Windows.Forms.TextBox txtbx_totalIcoNeo;
-        private System.Windows.Forms.TextBox txtbx_infStartTime;
         private System.Windows.Forms.Button Query;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TextBox txtbx_precision;
