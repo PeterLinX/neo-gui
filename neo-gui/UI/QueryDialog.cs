@@ -59,19 +59,19 @@ namespace Neo.UI
             if (!engine.State.HasFlag(VMState.FAULT))
             {
                 this.txtbx_name.Text = asset.AssetName;
-                this.txtbx_precision.Text = asset.Precision.ToString();
+                this.txtbx_precision.Text = asset.Decimals.ToString();
 
                 //symbol
                 this.txtbx_symbol.Text = engine.EvaluationStack.Pop().GetString();
 
                 //icoNeo
                 BigInteger _icoNeo = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Precision);
+                BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Decimals);
                 this.txtbx_icoNeo.Text = icoNeo.ToString();
 
                 //totalIcoNeo
                 BigInteger _totalIcoNeo = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Precision);
+                BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Decimals);
                 this.txtbx_totalIcoNeo.Text = totalIcoNeo.ToString();
 
                 //queryInflationStartTime
@@ -86,7 +86,7 @@ namespace Neo.UI
 
                 //totalSupply
                 BigInteger _totalSupply = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal totalSupply = new BigDecimal(_totalSupply, asset.Precision);
+                BigDecimal totalSupply = new BigDecimal(_totalSupply, asset.Decimals);
                 this.txtbx_totalSupply.Text = totalSupply.ToString();
             }
             else
@@ -121,7 +121,7 @@ namespace Neo.UI
             if (!engine.State.HasFlag(VMState.FAULT))
             {
                 BigInteger _balance = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal balance = new BigDecimal(_balance, asset.Precision);
+                BigDecimal balance = new BigDecimal(_balance, asset.Decimals);
                 this.txtbx_balance.Text = balance.ToString()+ " " + asset.AssetName;
             }
             else

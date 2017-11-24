@@ -38,7 +38,7 @@ namespace Neo.UI
         public MainForm(XDocument xdoc = null)
         {
             InitializeComponent();
-            StateReader.Notify += RuntimeNotify;
+            StateReader.Default.Notify += RuntimeNotify;
             if (xdoc != null)
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -71,7 +71,7 @@ namespace Neo.UI
                         case "refund":
                             byte[] accountScriptHash = arr[1].GetByteArray();
                             BigInteger _amountRefund = arr[2].GetBigInteger();
-                            BigDecimal amountRefund = new BigDecimal(_amountRefund, asset.Precision);
+                            BigDecimal amountRefund = new BigDecimal(_amountRefund, asset.Decimals);
                             string msgRefund1 = "scriptHash: " + args.ScriptHash.ToString() + "\r\n";
                             string msgRefund2 = "address: " + Wallet.ToAddress(UInt160.Parse(accountScriptHash.Reverse().ToHexString())) + "\r\n";
                             string msgRefund3 = "amount: " + amountRefund.ToString() + "\r\n" + "\r\n";
@@ -104,7 +104,7 @@ namespace Neo.UI
                             {
                                 strToScriptHash = Wallet.ToAddress(UInt160.Parse(_toScriptHash.Reverse().ToHexString()));
                             }
-                            BigDecimal amountTransfer = new BigDecimal(_amountTransfer, asset.Precision);
+                            BigDecimal amountTransfer = new BigDecimal(_amountTransfer, asset.Decimals);
                             string msgTransfer1 = "txid: " + txid + "\r\n";
                             string msgTransfer2 = "scriptHash: " + args.ScriptHash.ToString() + "\r\n";
                             string msgTransfer3 = "from: " + strFromScriptHash + "\r\n";
