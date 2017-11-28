@@ -48,10 +48,9 @@ namespace Neo.UI
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitAppCall(scriptHash, "totalSupply");
-                sb.EmitAppCall(scriptHash, "queryInflationRate");
-                sb.EmitAppCall(scriptHash, "queryInflationStartTime");
-                sb.EmitAppCall(scriptHash, "totalSalesNeo");
-                sb.EmitAppCall(scriptHash, "salesNeo");
+                sb.EmitAppCall(scriptHash, "totalToken");
+                sb.EmitAppCall(scriptHash, "icoToken");
+                sb.EmitAppCall(scriptHash, "icoNeo");
                 sb.EmitAppCall(scriptHash, "symbol");
                 script = sb.ToArray();
             }
@@ -69,10 +68,15 @@ namespace Neo.UI
                 BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Decimals);
                 this.txtbx_icoNeo.Text = icoNeo.ToString();
 
-                //totalIcoNeo
-                BigInteger _totalIcoNeo = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Decimals);
-                this.txtbx_totalIcoNeo.Text = totalIcoNeo.ToString();
+                //icoToken
+                BigInteger _icoToken = engine.EvaluationStack.Pop().GetBigInteger();
+                BigDecimal icoToken = new BigDecimal(_icoToken, asset.Decimals);
+                this.txtbx_icoToken.Text = icoToken.ToString();
+
+                //totalToken
+                BigInteger _totalToken = engine.EvaluationStack.Pop().GetBigInteger();
+                BigDecimal totalToken = new BigDecimal(_totalToken, asset.Decimals);
+                this.txtbx_totalToken.Text = totalToken.ToString();
 
                 //totalSupply
                 BigInteger _totalSupply = engine.EvaluationStack.Pop().GetBigInteger();

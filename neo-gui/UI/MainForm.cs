@@ -1,4 +1,5 @@
-﻿using Neo.Core;
+﻿using CsvHelper;
+using Neo.Core;
 using Neo.Cryptography;
 using Neo.Implementations.Blockchains.LevelDB;
 using Neo.Implementations.Wallets.EntityFramework;
@@ -38,7 +39,7 @@ namespace Neo.UI
         public MainForm(XDocument xdoc = null)
         {
             InitializeComponent();
-            StateReader.Default.Notify += RuntimeNotify;
+            Blockchain.Notify += BlockNotify;
             if (xdoc != null)
             {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -51,82 +52,119 @@ namespace Neo.UI
                 }
             }
         }
-
-        private static void RuntimeNotify(object sender, NotifyEventArgs args)
+        private static void BlockNotify(object sender, BlockNotifyEventArgs args)
         {
-            Transaction tx = (Transaction)args.ScriptContainer;
-            txid = tx.Hash.ToString();
-            if (txid == InvokeContractDialog.testTxid) return;
-            string filePath = Directory.GetCurrentDirectory();
-            var arr = args.State.GetArray();
-            string eventName = Encoding.Default.GetString(arr[0].GetByteArray());
-            foreach (string s in Settings.Default.NEP5Watched)
+            var x = args.Notifications;
+            for (int i = 0; i < args.Notifications.Length; i++)
             {
-                UInt160 asset_id = UInt160.Parse(s);
-                if (args.ScriptHash == asset_id)
+                var e = args.Notifications[i];
+                Transaction tx = (Transaction)e.ScriptContainer;
+                txid = tx.Hash.ToString();
+                if (txid == InvokeContractDialog.testTxid) continue;
+                if (e.State.IsArray == false) continue;
+                var arr = e.State.GetArray();
+                string eventName = Encoding.Default.GetString(arr[0].GetByteArray());
+                foreach (string s in Settings.Default.NEP5Watched)
                 {
-                    AssetDescriptor asset = new AssetDescriptor(asset_id);
-                    switch (eventName)
+                    UInt160 asset_id = UInt160.Parse(s);
+                    if (e.ScriptHash == asset_id)
                     {
-                        case "refund":
-                            byte[] accountScriptHash = arr[1].GetByteArray();
-                            BigInteger _amountRefund = arr[2].GetBigInteger();
-                            BigDecimal amountRefund = new BigDecimal(_amountRefund, asset.Decimals);
-                            string msgRefund1 = "scriptHash: " + args.ScriptHash.ToString() + "\r\n";
-                            string msgRefund2 = "address: " + Wallet.ToAddress(UInt160.Parse(accountScriptHash.Reverse().ToHexString())) + "\r\n";
-                            string msgRefund3 = "amount: " + amountRefund.ToString() + "\r\n" + "\r\n";
-                            string msgRefund = msgRefund1 + msgRefund2 + msgRefund3;
-                            byte[] refundByte = Encoding.UTF8.GetBytes(msgRefund);
-                            using (FileStream fsWrite = new FileStream(filePath + "/refund.txt", FileMode.Append))
-                            {
-                                fsWrite.Write(refundByte, 0, refundByte.Length);
-                            };
-                            break;
-                        case "transfer":
-                            string strFromScriptHash, strToScriptHash;
-                            byte[] _fromScriptHash = arr[1].GetByteArray();
-                            byte[] _toScriptHash = arr[2].GetByteArray();
-                            BigInteger _amountTransfer = arr[3].GetBigInteger();
+                        AssetDescriptor asset = new AssetDescriptor(asset_id);
+                        switch (eventName)
+                        {
+                            case "refund":
+                                byte[] accountScriptHash = arr[1].GetByteArray();
+                                BigInteger _amountRefund = arr[2].GetBigInteger();
+                                BigDecimal amountRefund = new BigDecimal(_amountRefund, asset.Decimals);
 
-                            if (isByteEmpty(_fromScriptHash)) {
-                                strFromScriptHash = "";
-                            }
-                            else
-                            {
-                                strFromScriptHash = Wallet.ToAddress(UInt160.Parse(_fromScriptHash.Reverse().ToHexString()));
-                            }
+                                string refundFilePath = Directory.GetCurrentDirectory() + "/refund.csv";
+                                if (!File.Exists(refundFilePath))
+                                {
+                                    using (FileStream fs = new FileStream(refundFilePath, FileMode.Create, FileAccess.Write))
+                                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                                    using (var csv = new CsvWriter(sw))
+                                    {
+                                        var header = new { A = "ScriptHash", B = "Address", C = "Amount", D = "Symbol" };
+                                        csv.WriteRecord(header);
+                                        csv.NextRecord();
+                                        var record = new { ScriptHash = e.ScriptHash.ToString(), Address = Wallet.ToAddress(UInt160.Parse(accountScriptHash.Reverse().ToHexString())), Amount = amountRefund.ToString(), Symbol = asset.AssetName };
+                                        csv.WriteRecord(record);
+                                        csv.NextRecord();
+                                    }
+                                }
+                                else
+                                {
+                                    using (FileStream fs = new FileStream(refundFilePath, FileMode.Append, FileAccess.Write))
+                                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                                    using (var csv = new CsvWriter(sw))
+                                    {
+                                        var record = new { ScriptHash = e.ScriptHash.ToString(), Address = Wallet.ToAddress(UInt160.Parse(accountScriptHash.Reverse().ToHexString())), Amount = amountRefund.ToString(), Symbol = asset.AssetName };
+                                        csv.WriteRecord(record);
+                                        csv.NextRecord();
+                                    }
+                                }
+                                break;
+                            case "transfer":
+                                string strFromScriptHash, strToScriptHash;
+                                byte[] _fromScriptHash = arr[1].GetByteArray();
+                                byte[] _toScriptHash = arr[2].GetByteArray();
+                                BigInteger _amountTransfer = arr[3].GetBigInteger();
 
-                            if (isByteEmpty(_toScriptHash))
-                            {
-                                strToScriptHash = "";
-                            }
-                            else
-                            {
-                                strToScriptHash = Wallet.ToAddress(UInt160.Parse(_toScriptHash.Reverse().ToHexString()));
-                            }
-                            BigDecimal amountTransfer = new BigDecimal(_amountTransfer, asset.Decimals);
-                            string msgTransfer1 = "txid: " + txid + "\r\n";
-                            string msgTransfer2 = "scriptHash: " + args.ScriptHash.ToString() + "\r\n";
-                            string msgTransfer3 = "from: " + strFromScriptHash + "\r\n";
-                            string msgTransfer4 = "to: " + strToScriptHash + "\r\n";
-                            string msgTransfer5 = "amount: " + amountTransfer.ToString() + "\r\n" + "\r\n";
-                            string msgTransfer = msgTransfer1 + msgTransfer2 + msgTransfer3 + msgTransfer4 + msgTransfer5;
-                            byte[] transferByte = Encoding.UTF8.GetBytes(msgTransfer);
-                            using (FileStream fsWrite = new FileStream(filePath + "/transfer.txt", FileMode.Append))
-                            {
-                                fsWrite.Write(transferByte, 0, transferByte.Length);
-                            };
-                            break;
-                        default:
-                            Debug.WriteLine(args.ScriptHash.ToString());
-                            break;
+                                if (isByteEmpty(_fromScriptHash))
+                                {
+                                    strFromScriptHash = "";
+                                }
+                                else
+                                {
+                                    strFromScriptHash = Wallet.ToAddress(UInt160.Parse(_fromScriptHash.Reverse().ToHexString()));
+                                }
+
+                                if (isByteEmpty(_toScriptHash))
+                                {
+                                    strToScriptHash = "";
+                                }
+                                else
+                                {
+                                    strToScriptHash = Wallet.ToAddress(UInt160.Parse(_toScriptHash.Reverse().ToHexString()));
+                                }
+                                BigDecimal amountTransfer = new BigDecimal(_amountTransfer, asset.Decimals);
+                                string transferFilePath = Directory.GetCurrentDirectory() + "/transfer.csv";
+                                if (!File.Exists(transferFilePath))
+                                {
+                                    using (FileStream fs = new FileStream(transferFilePath, FileMode.Create, FileAccess.Write))
+                                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                                    using (var csv = new CsvWriter(sw))
+                                    {
+                                        var header = new { A = "Txid", B = "ScriptHash", C = "From", D = "To", E = "Amount", F = "Symbol" };
+                                        csv.WriteRecord(header);
+                                        csv.NextRecord();
+                                        var record = new { Txid = txid, ScriptHash = e.ScriptHash.ToString(), From = strFromScriptHash, To = strToScriptHash, Amount = amountTransfer.ToString(), Symbol = asset.AssetName };
+                                        csv.WriteRecord(record);
+                                        csv.NextRecord();
+                                    }
+                                }
+                                else
+                                {
+                                    using (FileStream fs = new FileStream(transferFilePath, FileMode.Append, FileAccess.Write))
+                                    using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                                    using (var csv = new CsvWriter(sw))
+                                    {
+                                        var record = new { Txid = txid, ScriptHash = e.ScriptHash.ToString(), From = strFromScriptHash, To = strToScriptHash, Amount = amountTransfer.ToString(), Symbol = asset.AssetName };
+                                        csv.WriteRecord(record);
+                                        csv.NextRecord();
+                                    }
+                                }
+                                break;
+                            default:
+                                Debug.WriteLine(e.ScriptHash.ToString());
+                                break;
+                        }
                     }
                 }
+
             }
-
-
         }
-
+        
         private static bool isByteEmpty(byte[] param) {
             if (param != null)
             {
