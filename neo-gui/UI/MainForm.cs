@@ -2,6 +2,7 @@
 using Neo.Cryptography;
 using Neo.Implementations.Blockchains.LevelDB;
 using Neo.Implementations.Wallets.EntityFramework;
+using Neo.Implementations.Wallets.NEP6;
 using Neo.IO;
 using Neo.Properties;
 using Neo.SmartContract;
@@ -52,162 +53,88 @@ namespace Neo.UI
             }
         }
 
-        private static void RuntimeNotify(object sender, NotifyEventArgs args)
+        private void AddAccount(WalletAccount account, bool selected = false)
         {
-            Transaction tx = (Transaction)args.ScriptContainer;
-            txid = tx.Hash.ToString();
-            if (txid == InvokeContractDialog.testTxid) return;
-            string filePath = Directory.GetCurrentDirectory();
-            if (args.State.IsArray == false) return;
-            var arr = args.State.GetArray();
-            string eventName = Encoding.Default.GetString(arr[0].GetByteArray());
-            foreach (string s in Settings.Default.NEP5Watched)
+            ListViewItem item = listView1.Items[account.Address];
+            if (item != null)
             {
-                UInt160 asset_id = UInt160.Parse(s);
-                if (args.ScriptHash == asset_id)
+                if (!account.WatchOnly && ((WalletAccount)item.Tag).WatchOnly)
                 {
-                    AssetDescriptor asset = new AssetDescriptor(asset_id);
-                    switch (eventName)
-                    {
-                        case "refund":
-                            byte[] accountScriptHash = arr[1].GetByteArray();
-                            BigInteger _amountRefund = arr[2].GetBigInteger();
-                            BigDecimal amountRefund = new BigDecimal(_amountRefund, asset.Decimals);
-                            string msgRefund1 = "scriptHash: " + args.ScriptHash.ToString() + "\r\n";
-                            string msgRefund2 = "address: " + Wallet.ToAddress(UInt160.Parse(accountScriptHash.Reverse().ToHexString())) + "\r\n";
-                            string msgRefund3 = "amount: " + amountRefund.ToString() + "\r\n" + "\r\n";
-                            string msgRefund = msgRefund1 + msgRefund2 + msgRefund3;
-                            byte[] refundByte = Encoding.UTF8.GetBytes(msgRefund);
-                            using (FileStream fsWrite = new FileStream(filePath + "/refund.txt", FileMode.Append))
-                            {
-                                fsWrite.Write(refundByte, 0, refundByte.Length);
-                            };
-                            break;
-                        case "transfer":
-                            string strFromScriptHash, strToScriptHash;
-                            byte[] _fromScriptHash = arr[1].GetByteArray();
-                            byte[] _toScriptHash = arr[2].GetByteArray();
-                            BigInteger _amountTransfer = arr[3].GetBigInteger();
-
-                            if (isByteEmpty(_fromScriptHash)) {
-                                strFromScriptHash = "";
-                            }
-                            else
-                            {
-                                strFromScriptHash = Wallet.ToAddress(UInt160.Parse(_fromScriptHash.Reverse().ToHexString()));
-                            }
-
-                            if (isByteEmpty(_toScriptHash))
-                            {
-                                strToScriptHash = "";
-                            }
-                            else
-                            {
-                                strToScriptHash = Wallet.ToAddress(UInt160.Parse(_toScriptHash.Reverse().ToHexString()));
-                            }
-                            BigDecimal amountTransfer = new BigDecimal(_amountTransfer, asset.Decimals);
-                            string msgTransfer1 = "txid: " + txid + "\r\n";
-                            string msgTransfer2 = "scriptHash: " + args.ScriptHash.ToString() + "\r\n";
-                            string msgTransfer3 = "from: " + strFromScriptHash + "\r\n";
-                            string msgTransfer4 = "to: " + strToScriptHash + "\r\n";
-                            string msgTransfer5 = "amount: " + amountTransfer.ToString() + "\r\n" + "\r\n";
-                            string msgTransfer = msgTransfer1 + msgTransfer2 + msgTransfer3 + msgTransfer4 + msgTransfer5;
-                            byte[] transferByte = Encoding.UTF8.GetBytes(msgTransfer);
-                            using (FileStream fsWrite = new FileStream(filePath + "/transfer.txt", FileMode.Append))
-                            {
-                                fsWrite.Write(transferByte, 0, transferByte.Length);
-                            };
-                            break;
-                        default:
-                            Debug.WriteLine(args.ScriptHash.ToString());
-                            break;
-                    }
+                    listView1.Items.Remove(item);
+                    item = null;
                 }
             }
+            if (item == null)
+            {
+                string groupName = account.WatchOnly ? "watchOnlyGroup" : account.Contract.IsStandard ? "standardContractGroup" : "nonstandardContractGroup";
+                item = listView1.Items.Add(new ListViewItem(new[]
+                {
+                    new ListViewItem.ListViewSubItem
+                    {
+                        Name = "address",
+                        Text = account.Address
+                    },
+                    new ListViewItem.ListViewSubItem
+                    {
+                        Name = "ans"
+                    },
+                    new ListViewItem.ListViewSubItem
+                    {
+                        Name = "anc"
+                    }
+                }, -1, listView1.Groups[groupName])
+                {
+                    Name = account.Address,
+                    Tag = account
+                });
+            }
+            item.Selected = selected;
         }
 
-        private static bool isByteEmpty(byte[] param) {
-            if (param != null)
+        private void AddTransaction(Transaction tx, uint? height, uint time)
+        {
+            int? confirmations = (int)Blockchain.Default.Height - (int?)height + 1;
+            if (confirmations <= 0) confirmations = null;
+            string confirmations_str = confirmations?.ToString() ?? Strings.Unconfirmed;
+            string txid = tx.Hash.ToString();
+            if (listView3.Items.ContainsKey(txid))
             {
-                if (param.Length == 0)
-                {
-                    //空数组
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                listView3.Items[txid].Tag = height;
+                listView3.Items[txid].SubItems["confirmations"].Text = confirmations_str;
             }
             else
             {
-                return true;
-            }
-        }
+                listView3.Items.Insert(0, new ListViewItem(new[]
+                {
+                            new ListViewItem.ListViewSubItem
+                            {
+                                Name = "time",
+                                Text = time.ToDateTime().ToString()
+                            },
+                            new ListViewItem.ListViewSubItem
+                            {
+                                Name = "hash",
+                                Text = txid
+                            },
+                            new ListViewItem.ListViewSubItem
+                            {
+                                Name = "confirmations",
+                                Text = confirmations_str
+                            },
+                            //add transaction type to list by phinx
+                            new ListViewItem.ListViewSubItem
+                            {
+                                Name = "txtype",
+                                Text = tx.Type.ToString()
+                            }
+                            //end
 
-        private void AddAddressToListView(UInt160 scriptHash, bool selected = false)
-        {
-            string address = Wallet.ToAddress(scriptHash);
-            ListViewItem item = listView1.Items[address];
-            if (item == null)
-            {
-                ListViewGroup group = listView1.Groups["watchOnlyGroup"];
-                item = listView1.Items.Add(new ListViewItem(new[]
+                        }, -1)
                 {
-                    new ListViewItem.ListViewSubItem
-                    {
-                        Name = "address",
-                        Text = address
-                    },
-                    new ListViewItem.ListViewSubItem
-                    {
-                        Name = "ans"
-                    },
-                    new ListViewItem.ListViewSubItem
-                    {
-                        Name = "anc"
-                    }
-                }, -1, group)
-                {
-                    Name = address,
-                    Tag = scriptHash
+                    Name = txid,
+                    Tag = height
                 });
             }
-            item.Selected = selected;
-        }
-
-        private void AddContractToListView(VerificationContract contract, bool selected = false)
-        {
-            ListViewItem item = listView1.Items[contract.Address];
-            if (item?.Tag is UInt160)
-            {
-                listView1.Items.Remove(item);
-                item = null;
-            }
-            if (item == null)
-            {
-                ListViewGroup group = contract.IsStandard ? listView1.Groups["standardContractGroup"] : listView1.Groups["nonstandardContractGroup"];
-                item = listView1.Items.Add(new ListViewItem(new[]
-                {
-                    new ListViewItem.ListViewSubItem
-                    {
-                        Name = "address",
-                        Text = contract.Address
-                    },
-                    new ListViewItem.ListViewSubItem
-                    {
-                        Name = "ans"
-                    },
-                    new ListViewItem.ListViewSubItem
-                    {
-                        Name = "anc"
-                    }
-                }, -1, group)
-                {
-                    Name = contract.Address,
-                    Tag = contract
-                });
-            }
-            item.Selected = selected;
         }
 
         private void Blockchain_PersistCompleted(object sender, Block block)
@@ -219,28 +146,37 @@ namespace Neo.UI
                 if (Program.CurrentWallet.GetCoins().Any(p => !p.State.HasFlag(CoinState.Spent) && p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash)) == true)
                     balance_changed = true;
             }
-            CurrentWallet_TransactionsChanged(null, Enumerable.Empty<TransactionInfo>());
+            BeginInvoke(new Action(RefreshConfirmations));
         }
 
-        private void ChangeWallet(UserWallet wallet)
+        private void ChangeWallet(Wallet wallet)
         {
             if (Program.CurrentWallet != null)
             {
                 Program.CurrentWallet.BalanceChanged -= CurrentWallet_BalanceChanged;
-                Program.CurrentWallet.TransactionsChanged -= CurrentWallet_TransactionsChanged;
-                Program.CurrentWallet.Dispose();
+                if (Program.CurrentWallet is IDisposable disposable)
+                    disposable.Dispose();
             }
             Program.CurrentWallet = wallet;
             listView3.Items.Clear();
             if (Program.CurrentWallet != null)
             {
-                CurrentWallet_TransactionsChanged(null, Program.CurrentWallet.LoadTransactions());
+                foreach (var i in Program.CurrentWallet.GetTransactions().Select(p => new
+                {
+                    Transaction = Blockchain.Default.GetTransaction(p, out int height),
+                    Height = (uint)height
+                }).Where(p => p.Transaction != null).Select(p => new
+                {
+                    p.Transaction,
+                    p.Height,
+                    Time = Blockchain.Default.GetHeader(p.Height).Timestamp
+                }).OrderBy(p => p.Time))
+                {
+                    AddTransaction(i.Transaction, i.Height, i.Time);
+                }
                 Program.CurrentWallet.BalanceChanged += CurrentWallet_BalanceChanged;
-                Program.CurrentWallet.TransactionsChanged += CurrentWallet_TransactionsChanged;
             }
-            修改密码CToolStripMenuItem.Enabled = Program.CurrentWallet != null;
-            重建钱包数据库RToolStripMenuItem.Enabled = Program.CurrentWallet != null;
-            restoreAccountsToolStripMenuItem.Enabled = Program.CurrentWallet != null;
+            修改密码CToolStripMenuItem.Enabled = Program.CurrentWallet is UserWallet;
             交易TToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             提取小蚁币CToolStripMenuItem.Enabled = Program.CurrentWallet != null;
             requestCertificateToolStripMenuItem.Enabled = Program.CurrentWallet != null;
@@ -256,80 +192,19 @@ namespace Neo.UI
             listView1.Items.Clear();
             if (Program.CurrentWallet != null)
             {
-                foreach (UInt160 scriptHash in Program.CurrentWallet.GetAddresses().ToArray())
+                foreach (WalletAccount account in Program.CurrentWallet.GetAccounts().ToArray())
                 {
-                    VerificationContract contract = Program.CurrentWallet.GetContract(scriptHash);
-                    if (contract == null)
-                        AddAddressToListView(scriptHash);
-                    else
-                        AddContractToListView(contract);
+                    AddAccount(account);
                 }
             }
             balance_changed = true;
             check_nep5_balance = true;
         }
 
-        private void CurrentWallet_BalanceChanged(object sender, EventArgs e)
+        private void CurrentWallet_BalanceChanged(object sender, BalanceEventArgs e)
         {
             balance_changed = true;
-        }
-
-        private void CurrentWallet_TransactionsChanged(object sender, IEnumerable<TransactionInfo> transactions)
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new Action<object, IEnumerable<TransactionInfo>>(CurrentWallet_TransactionsChanged), sender, transactions);
-            }
-            else
-            {
-                foreach (TransactionInfo info in transactions)
-                {
-                    string txid = info.Transaction.Hash.ToString();
-                    if (listView3.Items.ContainsKey(txid))
-                    {
-                        listView3.Items[txid].Tag = info;
-                    }
-                    else
-                    {
-                        listView3.Items.Insert(0, new ListViewItem(new[]
-                        {
-                            new ListViewItem.ListViewSubItem
-                            {
-                                Name = "time",
-                                Text = info.Time.ToString()
-                            },
-                            new ListViewItem.ListViewSubItem
-                            {
-                                Name = "hash",
-                                Text = txid
-                            },
-                            new ListViewItem.ListViewSubItem
-                            {
-                                Name = "confirmations",
-                                Text = Strings.Unconfirmed
-                            },
-                            //add transaction type to list by phinx
-                            new ListViewItem.ListViewSubItem
-                            {
-                                Name = "txtype",
-                                Text = info.Transaction.Type.ToString()
-                            }
-                            //end
-
-                        }, -1)
-                        {
-                            Name = txid,
-                            Tag = info
-                        });
-                    }
-                }
-                foreach (ListViewItem item in listView3.Items)
-                {
-                    int? confirmations = (int)Blockchain.Default.Height - (int?)((TransactionInfo)item.Tag).Height + 1;
-                    if (confirmations <= 0) confirmations = null;
-                    item.SubItems["confirmations"].Text = confirmations?.ToString() ?? Strings.Unconfirmed;
-                }
-            }
+            BeginInvoke(new Action<Transaction, uint?, uint>(AddTransaction), e.Transaction, e.Height, e.Time);
         }
 
         private void ImportBlocks(Stream stream)
@@ -350,6 +225,17 @@ namespace Neo.UI
                 }
             }
             blockchain.VerifyBlocks = true;
+        }
+
+        private void RefreshConfirmations()
+        {
+            foreach (ListViewItem item in listView3.Items)
+            {
+                uint? height = item.Tag as uint?;
+                int? confirmations = (int)Blockchain.Default.Height - (int?)height + 1;
+                if (confirmations <= 0) confirmations = null;
+                item.SubItems["confirmations"].Text = confirmations?.ToString() ?? Strings.Unconfirmed;
+            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -377,7 +263,7 @@ namespace Neo.UI
                     File.Delete(acc_zip_path);
                 }
                 Blockchain.PersistCompleted += Blockchain_PersistCompleted;
-                Program.LocalNode.Start(Settings.Default.NodePort, Settings.Default.WsPort);
+                Program.LocalNode.Start(Settings.Default.P2P.Port, Settings.Default.P2P.WsPort);
             });
         }
 
@@ -550,7 +436,7 @@ namespace Neo.UI
                 }
                 if (check_nep5_balance && persistence_span > TimeSpan.FromSeconds(2))
                 {
-                    UInt160[] addresses = Program.CurrentWallet.GetAddresses().ToArray();
+                    UInt160[] addresses = Program.CurrentWallet.GetAccounts().Select(p => p.ScriptHash).ToArray();
                     foreach (string s in Settings.Default.NEP5Watched)
                     {
                         UInt160 script_hash = UInt160.Parse(s);
@@ -618,7 +504,11 @@ namespace Neo.UI
             using (CreateWalletDialog dialog = new CreateWalletDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                ChangeWallet(UserWallet.Create(dialog.WalletPath, dialog.Password));
+                NEP6Wallet wallet = new NEP6Wallet(dialog.WalletPath);
+                wallet.Unlock(dialog.Password);
+                wallet.CreateAccount();
+                wallet.Save();
+                ChangeWallet(wallet);
                 Settings.Default.LastWalletPath = dialog.WalletPath;
                 Settings.Default.Save();
             }
@@ -629,30 +519,58 @@ namespace Neo.UI
             using (OpenWalletDialog dialog = new OpenWalletDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                if (UserWallet.GetVersion(dialog.WalletPath) < Version.Parse("1.3.5"))
+                string path = dialog.WalletPath;
+                Wallet wallet;
+                if (Path.GetExtension(path) == ".db3")
                 {
-                    if (MessageBox.Show(Strings.MigrateWalletMessage, Strings.MigrateWalletCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+                    if (MessageBox.Show(Strings.MigrateWalletMessage, Strings.MigrateWalletCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                    {
+                        string path_old = path;
+                        path = Path.ChangeExtension(path_old, ".json");
+                        NEP6Wallet nep6wallet;
+                        try
+                        {
+                            nep6wallet = NEP6Wallet.Migrate(path, path_old, dialog.Password);
+                        }
+                        catch (CryptographicException)
+                        {
+                            MessageBox.Show(Strings.PasswordIncorrect);
+                            return;
+                        }
+                        nep6wallet.Save();
+                        nep6wallet.Unlock(dialog.Password);
+                        wallet = nep6wallet;
+                        MessageBox.Show($"{Strings.MigrateWalletSucceedMessage}\n{path}");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            wallet = UserWallet.Open(path, dialog.Password);
+                        }
+                        catch (CryptographicException)
+                        {
+                            MessageBox.Show(Strings.PasswordIncorrect);
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    NEP6Wallet nep6wallet = new NEP6Wallet(path);
+                    try
+                    {
+                        nep6wallet.Unlock(dialog.Password);
+                    }
+                    catch (CryptographicException)
+                    {
+                        MessageBox.Show(Strings.PasswordIncorrect);
                         return;
-                    string path_old = Path.ChangeExtension(dialog.WalletPath, ".old.db3");
-                    string path_new = Path.ChangeExtension(dialog.WalletPath, ".new.db3");
-                    UserWallet.Migrate(dialog.WalletPath, path_new);
-                    File.Move(dialog.WalletPath, path_old);
-                    File.Move(path_new, dialog.WalletPath);
-                    MessageBox.Show($"{Strings.MigrateWalletSucceedMessage}\n{path_old}");
+                    }
+                    wallet = nep6wallet;
                 }
-                UserWallet wallet;
-                try
-                {
-                    wallet = UserWallet.Open(dialog.WalletPath, dialog.Password);
-                }
-                catch (CryptographicException)
-                {
-                    MessageBox.Show(Strings.PasswordIncorrect);
-                    return;
-                }
-                if (dialog.RepairMode) wallet.Rebuild();
                 ChangeWallet(wallet);
-                Settings.Default.LastWalletPath = dialog.WalletPath;
+                Settings.Default.LastWalletPath = path;
                 Settings.Default.Save();
             }
         }
@@ -662,7 +580,7 @@ namespace Neo.UI
             using (ChangePasswordDialog dialog = new ChangePasswordDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                if (Program.CurrentWallet.ChangePassword(dialog.OldPassword, dialog.NewPassword))
+                if (((UserWallet)Program.CurrentWallet).ChangePassword(dialog.OldPassword, dialog.NewPassword))
                     MessageBox.Show(Strings.ChangePasswordSuccessful);
                 else
                     MessageBox.Show(Strings.PasswordIncorrect);
@@ -673,20 +591,7 @@ namespace Neo.UI
         {
             listView2.Items.Clear();
             listView3.Items.Clear();
-            Program.CurrentWallet.Rebuild();
-        }
-
-        private void restoreAccountsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (RestoreAccountsDialog dialog = new RestoreAccountsDialog())
-            {
-                if (dialog.ShowDialog() != DialogResult.OK) return;
-                foreach (VerificationContract contract in dialog.GetContracts())
-                {
-                    Program.CurrentWallet.AddContract(contract);
-                    AddContractToListView(contract, true);
-                }
-            }
+            WalletIndexer.RebuildIndex();
         }
 
         private void 退出XToolStripMenuItem_Click(object sender, EventArgs e)
@@ -697,17 +602,21 @@ namespace Neo.UI
         private void 转账TToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Transaction tx;
+            UInt160 change_address;
+            Fixed8 fee;
             using (TransferDialog dialog = new TransferDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
                 tx = dialog.GetTransaction();
+                change_address = dialog.ChangeAddress;
+                fee = dialog.Fee;
             }
             if (tx is InvocationTransaction itx)
             {
                 using (InvokeContractDialog dialog = new InvokeContractDialog(itx))
                 {
                     if (dialog.ShowDialog() != DialogResult.OK) return;
-                    tx = dialog.GetTransaction();
+                    tx = dialog.GetTransaction(change_address, fee);
                 }
             }
             Helper.SignAndShowInformation(tx);
@@ -835,14 +744,14 @@ namespace Neo.UI
         {
             查看私钥VToolStripMenuItem.Enabled =
                 listView1.SelectedIndices.Count == 1 &&
-                listView1.SelectedItems[0].Tag is Contract &&
-                ((Contract)listView1.SelectedItems[0].Tag).IsStandard;
+                !((WalletAccount)listView1.SelectedItems[0].Tag).WatchOnly &&
+                ((WalletAccount)listView1.SelectedItems[0].Tag).Contract.IsStandard;
             viewContractToolStripMenuItem.Enabled =
                 listView1.SelectedIndices.Count == 1 &&
-                listView1.SelectedItems[0].Tag is Contract;
+                !((WalletAccount)listView1.SelectedItems[0].Tag).WatchOnly;
             voteToolStripMenuItem.Enabled =
                 listView1.SelectedIndices.Count == 1 &&
-                listView1.SelectedItems[0].Tag is Contract &&
+                !((WalletAccount)listView1.SelectedItems[0].Tag).WatchOnly &&
                 !string.IsNullOrEmpty(listView1.SelectedItems[0].SubItems["ans"].Text) &&
                 decimal.Parse(listView1.SelectedItems[0].SubItems["ans"].Text) > 0;
             复制到剪贴板CToolStripMenuItem.Enabled = listView1.SelectedIndices.Count == 1;
@@ -852,11 +761,10 @@ namespace Neo.UI
         private void 创建新地址NToolStripMenuItem_Click(object sender, EventArgs e)
         {
             listView1.SelectedIndices.Clear();
-            KeyPair key = Program.CurrentWallet.CreateKey();
-            foreach (VerificationContract contract in Program.CurrentWallet.GetContracts(key.PublicKeyHash))
-            {
-                AddContractToListView(contract, true);
-            }
+            WalletAccount account = Program.CurrentWallet.CreateAccount();
+            AddAccount(account, true);
+            if (Program.CurrentWallet is NEP6Wallet wallet)
+                wallet.Save();
         }
 
         private void importWIFToolStripMenuItem_Click(object sender, EventArgs e)
@@ -867,20 +775,19 @@ namespace Neo.UI
                 listView1.SelectedIndices.Clear();
                 foreach (string wif in dialog.WifStrings)
                 {
-                    KeyPair key;
+                    WalletAccount account;
                     try
                     {
-                        key = Program.CurrentWallet.Import(wif);
+                        account = Program.CurrentWallet.Import(wif);
                     }
                     catch (FormatException)
                     {
                         continue;
                     }
-                    foreach (VerificationContract contract in Program.CurrentWallet.GetContracts(key.PublicKeyHash))
-                    {
-                        AddContractToListView(contract, true);
-                    }
+                    AddAccount(account, true);
                 }
+                if (Program.CurrentWallet is NEP6Wallet wallet)
+                    wallet.Save();
             }
         }
 
@@ -890,11 +797,10 @@ namespace Neo.UI
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
                 listView1.SelectedIndices.Clear();
-                KeyPair key = Program.CurrentWallet.Import(dialog.SelectedCertificate);
-                foreach (VerificationContract contract in Program.CurrentWallet.GetContracts(key.PublicKeyHash))
-                {
-                    AddContractToListView(contract, true);
-                }
+                WalletAccount account = Program.CurrentWallet.Import(dialog.SelectedCertificate);
+                AddAccount(account, true);
+                if (Program.CurrentWallet is NEP6Wallet wallet)
+                    wallet.Save();
             }
         }
 
@@ -919,10 +825,12 @@ namespace Neo.UI
                     {
                         continue;
                     }
-                    Program.CurrentWallet.AddWatchOnly(scriptHash);
-                    AddAddressToListView(scriptHash, true);
+                    WalletAccount account = Program.CurrentWallet.CreateAccount(scriptHash);
+                    AddAccount(account, true);
                 }
             }
+            if (Program.CurrentWallet is NEP6Wallet wallet)
+                wallet.Save();
         }
 
         private void 多方签名MToolStripMenuItem_Click(object sender, EventArgs e)
@@ -930,15 +838,17 @@ namespace Neo.UI
             using (CreateMultiSigContractDialog dialog = new CreateMultiSigContractDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                VerificationContract contract = dialog.GetContract();
+                Contract contract = dialog.GetContract();
                 if (contract == null)
                 {
                     MessageBox.Show(Strings.AddContractFailedMessage);
                     return;
                 }
-                Program.CurrentWallet.AddContract(contract);
+                WalletAccount account = Program.CurrentWallet.CreateAccount(contract, dialog.GetKey());
+                if (Program.CurrentWallet is NEP6Wallet wallet)
+                    wallet.Save();
                 listView1.SelectedIndices.Clear();
-                AddContractToListView(contract, true);
+                AddAccount(account, true);
             }
         }
 
@@ -947,15 +857,17 @@ namespace Neo.UI
             using (CreateLockAccountDialog dialog = new CreateLockAccountDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                VerificationContract contract = dialog.GetContract();
+                Contract contract = dialog.GetContract();
                 if (contract == null)
                 {
                     MessageBox.Show(Strings.AddContractFailedMessage);
                     return;
                 }
-                Program.CurrentWallet.AddContract(contract);
+                WalletAccount account = Program.CurrentWallet.CreateAccount(contract, dialog.GetKey());
+                if (Program.CurrentWallet is NEP6Wallet wallet)
+                    wallet.Save();
                 listView1.SelectedIndices.Clear();
-                AddContractToListView(contract, true);
+                AddAccount(account, true);
             }
         }
 
@@ -964,18 +876,19 @@ namespace Neo.UI
             using (ImportCustomContractDialog dialog = new ImportCustomContractDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                VerificationContract contract = dialog.GetContract();
-                Program.CurrentWallet.AddContract(contract);
+                Contract contract = dialog.GetContract();
+                WalletAccount account = Program.CurrentWallet.CreateAccount(contract, dialog.GetKey());
+                if (Program.CurrentWallet is NEP6Wallet wallet)
+                    wallet.Save();
                 listView1.SelectedIndices.Clear();
-                AddContractToListView(contract, true);
+                AddAccount(account, true);
             }
         }
 
         private void 查看私钥VToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Contract contract = (Contract)listView1.SelectedItems[0].Tag;
-            KeyPair key = Program.CurrentWallet.GetKeyByScriptHash(contract.ScriptHash);
-            using (ViewPrivateKeyDialog dialog = new ViewPrivateKeyDialog(key, contract.ScriptHash))
+            WalletAccount account = (WalletAccount)listView1.SelectedItems[0].Tag;
+            using (ViewPrivateKeyDialog dialog = new ViewPrivateKeyDialog(account))
             {
                 dialog.ShowDialog();
             }
@@ -983,8 +896,8 @@ namespace Neo.UI
 
         private void viewContractToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            VerificationContract contract = (VerificationContract)listView1.SelectedItems[0].Tag;
-            using (ViewContractDialog dialog = new ViewContractDialog(contract))
+            WalletAccount account = (WalletAccount)listView1.SelectedItems[0].Tag;
+            using (ViewContractDialog dialog = new ViewContractDialog(account.Contract))
             {
                 dialog.ShowDialog();
             }
@@ -993,8 +906,8 @@ namespace Neo.UI
         private void voteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             InvocationTransaction tx;
-            Contract contract = (Contract)listView1.SelectedItems[0].Tag;
-            using (VotingDialog dialog = new VotingDialog(contract.ScriptHash))
+            WalletAccount account = (WalletAccount)listView1.SelectedItems[0].Tag;
+            using (VotingDialog dialog = new VotingDialog(account.ScriptHash))
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
                 tx = dialog.GetTransaction();
@@ -1020,12 +933,11 @@ namespace Neo.UI
         {
             if (MessageBox.Show(Strings.DeleteAddressConfirmationMessage, Strings.DeleteAddressConfirmationCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
                 return;
-            object[] tags = listView1.SelectedItems.OfType<ListViewItem>().Select(p => p.Tag).ToArray();
-            foreach (object tag in tags)
+            WalletAccount[] accounts = listView1.SelectedItems.OfType<ListViewItem>().Select(p => (WalletAccount)p.Tag).ToArray();
+            foreach (WalletAccount account in accounts)
             {
-                UInt160 scriptHash = (tag as UInt160) ?? ((Contract)tag).ScriptHash;
-                listView1.Items.RemoveByKey(Wallet.ToAddress(scriptHash));
-                Program.CurrentWallet.DeleteAddress(scriptHash);
+                listView1.Items.RemoveByKey(account.Address);
+                Program.CurrentWallet.DeleteAccount(account.ScriptHash);
             }
             balance_changed = true;
         }
@@ -1050,7 +962,7 @@ namespace Neo.UI
             AssetState asset = (AssetState)listView2.SelectedItems[0].Tag;
             UInt160 hash = Contract.CreateSignatureRedeemScript(asset.Owner).ToScriptHash();
             string address = Wallet.ToAddress(hash);
-            string path = Path.Combine(Settings.Default.CertCachePath, $"{address}.cer");
+            string path = Path.Combine(Settings.Default.Paths.CertCache, $"{address}.cer");
             Process.Start(path);
         }
 
