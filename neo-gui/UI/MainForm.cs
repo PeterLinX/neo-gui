@@ -54,7 +54,6 @@ namespace Neo.UI
         }
         private static void BlockNotify(object sender, BlockNotifyEventArgs args)
         {
-            var x = args.Notifications;
             for (int i = 0; i < args.Notifications.Length; i++)
             {
                 var e = args.Notifications[i];
