@@ -80,8 +80,7 @@ namespace Neo.UI
 
                 //queryInflationRate
                 BigInteger iRate = engine.EvaluationStack.Pop().GetBigInteger();
-                double dividend = 1000000000000;
-                double result = (double)iRate / dividend;
+                double result = (double)iRate;
                 this.txtbx_inflationRate.Text = result.ToString();
 
                 //totalSupply

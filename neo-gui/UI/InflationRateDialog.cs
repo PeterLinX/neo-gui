@@ -14,7 +14,6 @@ namespace Neo.UI
     public partial class InflationRateDialog : Form
     {
         private string scriptHash;
-        private const long multiplier = 1000000000000;
         public InflationRateDialog(string scriptHash)
         {
             InitializeComponent();
@@ -27,7 +26,6 @@ namespace Neo.UI
             UInt160 script_hash = UInt160.Parse(this.scriptHash);
             string strRate = this.textBox1.Text;
             double _iRate = double.Parse(strRate);
-            _iRate = Math.Floor(_iRate * multiplier);
             
             BigInteger iRate = new BigInteger(_iRate);
             object[] param = { iRate };
