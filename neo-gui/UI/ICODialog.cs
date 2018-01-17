@@ -239,30 +239,30 @@ namespace Neo.UI
 
         private void button5_Click(object sender, EventArgs e)
         {
-            string command = "balanceOf";
-            string scriptHash = Settings.Default.NEP5Watched.OfType<string>().ToArray()[0];
-            UInt160 script_hash = UInt160.Parse(scriptHash);
-            AssetDescriptor asset = new AssetDescriptor(script_hash);
+            //string command = "balanceOf";
+            //string scriptHash = Settings.Default.NEP5Watched.OfType<string>().ToArray()[0];
+            //UInt160 script_hash = UInt160.Parse(scriptHash);
+            //AssetDescriptor asset = new AssetDescriptor(script_hash);
 
-            UInt160[] addresses = Program.CurrentWallet.GetAddresses().ToArray();
-            object[] param = { addresses[0] };
-            byte[] script;
-            using (ScriptBuilder sb = new ScriptBuilder())
-            {
-                sb.EmitAppCall(script_hash, command, param);
-                script = sb.ToArray();
-            }
-            ApplicationEngine engine = ApplicationEngine.Run(script);
-            if (!engine.State.HasFlag(VMState.FAULT))
-            {
-                BigInteger _balance = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal balance = new BigDecimal(_balance, asset.Decimals);
-                this.textBox7.Text = balance.ToString();
-            }
-            else
-            {
-                MessageBox.Show("Query Failed");
-            }
+            //UInt160[] addresses = Program.CurrentWallet.GetAddresses().ToArray();
+            //object[] param = { addresses[0] };
+            //byte[] script;
+            //using (ScriptBuilder sb = new ScriptBuilder())
+            //{
+            //    sb.EmitAppCall(script_hash, command, param);
+            //    script = sb.ToArray();
+            //}
+            //ApplicationEngine engine = ApplicationEngine.Run(script);
+            //if (!engine.State.HasFlag(VMState.FAULT))
+            //{
+            //    BigInteger _balance = engine.EvaluationStack.Pop().GetBigInteger();
+            //    BigDecimal balance = new BigDecimal(_balance, asset.Decimals);
+            //    this.textBox7.Text = balance.ToString();
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Query Failed");
+            //}
         }
 
         private void button6_Click(object sender, EventArgs e)

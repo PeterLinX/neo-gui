@@ -33,8 +33,12 @@ namespace Neo.UI
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.scriptHash = UInt160.Parse(comboBox1.SelectedItem as string);
-            this.asset = new AssetDescriptor(this.scriptHash);
+            //this.scriptHash = UInt160.Parse(comboBox1.SelectedItem as string);
+            //this.asset = new AssetDescriptor(this.scriptHash);
+
+            string x = "0xecc6b20d3ccac1ee9ef109af5a7cdb85706b1df9";
+            UInt160 scriptHash = UInt160.Parse(x);
+            AssetDescriptor asset = new AssetDescriptor(scriptHash);
         }
 
         private void Query_Click(object sender, EventArgs e)

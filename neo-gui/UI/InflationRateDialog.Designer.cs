@@ -36,34 +36,34 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(28, 38);
+            this.label1.Location = new System.Drawing.Point(12, 34);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(87, 17);
+            this.label1.Size = new System.Drawing.Size(111, 15);
             this.label1.TabIndex = 0;
             this.label1.Text = "InflationRate";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(130, 35);
+            this.textBox1.Location = new System.Drawing.Point(145, 31);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(233, 22);
+            this.textBox1.Size = new System.Drawing.Size(233, 25);
             this.textBox1.TabIndex = 1;
             // 
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(401, 33);
+            this.button1.Location = new System.Drawing.Point(409, 32);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(102, 26);
+            this.button1.Size = new System.Drawing.Size(102, 24);
             this.button1.TabIndex = 2;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
             // 
             // InflationRateDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(523, 97);
+            this.ClientSize = new System.Drawing.Size(523, 91);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label1);
