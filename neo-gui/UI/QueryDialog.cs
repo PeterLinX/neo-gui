@@ -33,12 +33,8 @@ namespace Neo.UI
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //this.scriptHash = UInt160.Parse(comboBox1.SelectedItem as string);
-            //this.asset = new AssetDescriptor(this.scriptHash);
-
-            string x = "0xecc6b20d3ccac1ee9ef109af5a7cdb85706b1df9";
-            UInt160 scriptHash = UInt160.Parse(x);
-            AssetDescriptor asset = new AssetDescriptor(scriptHash);
+            this.scriptHash = UInt160.Parse(comboBox1.SelectedItem as string);
+            this.asset = new AssetDescriptor(this.scriptHash);
         }
 
         private void Query_Click(object sender, EventArgs e)
@@ -85,7 +81,7 @@ namespace Neo.UI
                 //queryInflationRate
                 BigInteger iRate = engine.EvaluationStack.Pop().GetBigInteger();
                 double dividend = 1000000000000;
-                double result = (double)iRate/dividend;
+                double result = (double)iRate / dividend;
                 this.txtbx_inflationRate.Text = result.ToString();
 
                 //totalSupply
