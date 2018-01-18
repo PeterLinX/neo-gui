@@ -51,11 +51,11 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.CheckBalance = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtbx_address = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
             this.txtbx_balance = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txtbx_address = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.CheckBalance = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -211,33 +211,33 @@
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.TabStop = false;
             // 
-            // CheckBalance
+            // txtbx_balance
             // 
-            resources.ApplyResources(this.CheckBalance, "CheckBalance");
-            this.CheckBalance.Name = "CheckBalance";
-            this.CheckBalance.UseVisualStyleBackColor = true;
-            this.CheckBalance.Click += new System.EventHandler(this.CheckBalance_Click);
-            // 
-            // label10
-            // 
-            resources.ApplyResources(this.label10, "label10");
-            this.label10.Name = "label10";
-            // 
-            // txtbx_address
-            // 
-            resources.ApplyResources(this.txtbx_address, "txtbx_address");
-            this.txtbx_address.Name = "txtbx_address";
+            resources.ApplyResources(this.txtbx_balance, "txtbx_balance");
+            this.txtbx_balance.Name = "txtbx_balance";
+            this.txtbx_balance.ReadOnly = true;
             // 
             // label11
             // 
             resources.ApplyResources(this.label11, "label11");
             this.label11.Name = "label11";
             // 
-            // txtbx_balance
+            // txtbx_address
             // 
-            resources.ApplyResources(this.txtbx_balance, "txtbx_balance");
-            this.txtbx_balance.Name = "txtbx_balance";
-            this.txtbx_balance.ReadOnly = true;
+            resources.ApplyResources(this.txtbx_address, "txtbx_address");
+            this.txtbx_address.Name = "txtbx_address";
+            // 
+            // label10
+            // 
+            resources.ApplyResources(this.label10, "label10");
+            this.label10.Name = "label10";
+            // 
+            // CheckBalance
+            // 
+            resources.ApplyResources(this.CheckBalance, "CheckBalance");
+            this.CheckBalance.Name = "CheckBalance";
+            this.CheckBalance.UseVisualStyleBackColor = true;
+            this.CheckBalance.Click += new System.EventHandler(this.CheckBalance_Click);
             // 
             // QueryDialog
             // 

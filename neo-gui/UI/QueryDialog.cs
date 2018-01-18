@@ -50,8 +50,8 @@ namespace Neo.UI
                 sb.EmitAppCall(scriptHash, "totalSupply");
                 sb.EmitAppCall(scriptHash, "queryInflationRate");
                 sb.EmitAppCall(scriptHash, "queryInflationStartTime");
-                sb.EmitAppCall(scriptHash, "totalSalesNeo");
-                sb.EmitAppCall(scriptHash, "salesNeo");
+                //sb.EmitAppCall(scriptHash, "totalSalesNeo");
+                //sb.EmitAppCall(scriptHash, "salesNeo");
                 sb.EmitAppCall(scriptHash, "symbol");
                 script = sb.ToArray();
             }
@@ -65,14 +65,14 @@ namespace Neo.UI
                 this.txtbx_symbol.Text = engine.EvaluationStack.Pop().GetString();
 
                 //icoNeo
-                BigInteger _icoNeo = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Decimals);
-                this.txtbx_icoNeo.Text = icoNeo.ToString();
+                //BigInteger _icoNeo = engine.EvaluationStack.Pop().GetBigInteger();
+                //BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Decimals);
+                //this.txtbx_icoNeo.Text = icoNeo.ToString();
 
                 //totalIcoNeo
-                BigInteger _totalIcoNeo = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Decimals);
-                this.txtbx_totalIcoNeo.Text = totalIcoNeo.ToString();
+                //BigInteger _totalIcoNeo = engine.EvaluationStack.Pop().GetBigInteger();
+                //BigDecimal totalIcoNeo = new BigDecimal(_totalIcoNeo, asset.Decimals);
+                //this.txtbx_totalIcoNeo.Text = totalIcoNeo.ToString();
 
                 //queryInflationStartTime
                 BigInteger startTime = engine.EvaluationStack.Pop().GetBigInteger();
