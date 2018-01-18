@@ -41,8 +41,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtbx_totalSupply = new System.Windows.Forms.TextBox();
             this.txtbx_inflationRate = new System.Windows.Forms.TextBox();
-            this.txtbx_icoNeo = new System.Windows.Forms.TextBox();
-            this.txtbx_totalIcoNeo = new System.Windows.Forms.TextBox();
+            this.txtbx_icoToken = new System.Windows.Forms.TextBox();
+            this.txtbx_totalToken = new System.Windows.Forms.TextBox();
             this.txtbx_infStartTime = new System.Windows.Forms.TextBox();
             this.Query = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
@@ -56,6 +56,8 @@
             this.txtbx_address = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.CheckBalance = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtbx_icoNeo = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -84,6 +86,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.txtbx_icoNeo);
+            this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.txtbx_name);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.txtbx_precision);
@@ -92,8 +96,8 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtbx_totalSupply);
             this.groupBox2.Controls.Add(this.txtbx_inflationRate);
-            this.groupBox2.Controls.Add(this.txtbx_icoNeo);
-            this.groupBox2.Controls.Add(this.txtbx_totalIcoNeo);
+            this.groupBox2.Controls.Add(this.txtbx_icoToken);
+            this.groupBox2.Controls.Add(this.txtbx_totalToken);
             this.groupBox2.Controls.Add(this.txtbx_infStartTime);
             this.groupBox2.Controls.Add(this.Query);
             this.groupBox2.Controls.Add(this.label8);
@@ -150,17 +154,17 @@
             this.txtbx_inflationRate.Name = "txtbx_inflationRate";
             this.txtbx_inflationRate.ReadOnly = true;
             // 
-            // txtbx_icoNeo
+            // txtbx_icoToken
             // 
-            resources.ApplyResources(this.txtbx_icoNeo, "txtbx_icoNeo");
-            this.txtbx_icoNeo.Name = "txtbx_icoNeo";
-            this.txtbx_icoNeo.ReadOnly = true;
+            resources.ApplyResources(this.txtbx_icoToken, "txtbx_icoToken");
+            this.txtbx_icoToken.Name = "txtbx_icoToken";
+            this.txtbx_icoToken.ReadOnly = true;
             // 
-            // txtbx_totalIcoNeo
+            // txtbx_totalToken
             // 
-            resources.ApplyResources(this.txtbx_totalIcoNeo, "txtbx_totalIcoNeo");
-            this.txtbx_totalIcoNeo.Name = "txtbx_totalIcoNeo";
-            this.txtbx_totalIcoNeo.ReadOnly = true;
+            resources.ApplyResources(this.txtbx_totalToken, "txtbx_totalToken");
+            this.txtbx_totalToken.Name = "txtbx_totalToken";
+            this.txtbx_totalToken.ReadOnly = true;
             // 
             // txtbx_infStartTime
             // 
@@ -239,6 +243,17 @@
             this.CheckBalance.UseVisualStyleBackColor = true;
             this.CheckBalance.Click += new System.EventHandler(this.CheckBalance_Click);
             // 
+            // label12
+            // 
+            resources.ApplyResources(this.label12, "label12");
+            this.label12.Name = "label12";
+            // 
+            // txtbx_icoNeo
+            // 
+            resources.ApplyResources(this.txtbx_icoNeo, "txtbx_icoNeo");
+            this.txtbx_icoNeo.Name = "txtbx_icoNeo";
+            this.txtbx_icoNeo.ReadOnly = true;
+            // 
             // QueryDialog
             // 
             resources.ApplyResources(this, "$this");
@@ -266,8 +281,8 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtbx_totalSupply;
         private System.Windows.Forms.TextBox txtbx_inflationRate;
-        private System.Windows.Forms.TextBox txtbx_icoNeo;
-        private System.Windows.Forms.TextBox txtbx_totalIcoNeo;
+        private System.Windows.Forms.TextBox txtbx_icoToken;
+        private System.Windows.Forms.TextBox txtbx_totalToken;
         private System.Windows.Forms.TextBox txtbx_infStartTime;
         private System.Windows.Forms.Button Query;
         private System.Windows.Forms.Label label8;
@@ -286,5 +301,7 @@
         private System.Windows.Forms.TextBox txtbx_address;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button CheckBalance;
+        private System.Windows.Forms.TextBox txtbx_icoNeo;
+        private System.Windows.Forms.Label label12;
     }
 }
