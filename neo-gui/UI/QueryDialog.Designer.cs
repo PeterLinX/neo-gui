@@ -43,7 +43,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtbx_totalSupply = new System.Windows.Forms.TextBox();
             this.txtbx_inflationRate = new System.Windows.Forms.TextBox();
-            this.txtbx_icoToken = new System.Windows.Forms.TextBox();
+            this.txtbx_inflationToken = new System.Windows.Forms.TextBox();
             this.txtbx_totalToken = new System.Windows.Forms.TextBox();
             this.txtbx_infStartTime = new System.Windows.Forms.TextBox();
             this.Query = new System.Windows.Forms.Button();
@@ -100,7 +100,7 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtbx_totalSupply);
             this.groupBox2.Controls.Add(this.txtbx_inflationRate);
-            this.groupBox2.Controls.Add(this.txtbx_icoToken);
+            this.groupBox2.Controls.Add(this.txtbx_inflationToken);
             this.groupBox2.Controls.Add(this.txtbx_totalToken);
             this.groupBox2.Controls.Add(this.txtbx_infStartTime);
             this.groupBox2.Controls.Add(this.Query);
@@ -169,11 +169,11 @@
             this.txtbx_inflationRate.Name = "txtbx_inflationRate";
             this.txtbx_inflationRate.ReadOnly = true;
             // 
-            // txtbx_icoToken
+            // txtbx_inflationToken
             // 
-            resources.ApplyResources(this.txtbx_icoToken, "txtbx_icoToken");
-            this.txtbx_icoToken.Name = "txtbx_icoToken";
-            this.txtbx_icoToken.ReadOnly = true;
+            resources.ApplyResources(this.txtbx_inflationToken, "txtbx_inflationToken");
+            this.txtbx_inflationToken.Name = "txtbx_inflationToken";
+            this.txtbx_inflationToken.ReadOnly = true;
             // 
             // txtbx_totalToken
             // 
@@ -296,7 +296,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtbx_totalSupply;
         private System.Windows.Forms.TextBox txtbx_inflationRate;
-        private System.Windows.Forms.TextBox txtbx_icoToken;
+        private System.Windows.Forms.TextBox txtbx_inflationToken;
         private System.Windows.Forms.TextBox txtbx_totalToken;
         private System.Windows.Forms.TextBox txtbx_infStartTime;
         private System.Windows.Forms.Button Query;

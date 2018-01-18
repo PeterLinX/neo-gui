@@ -52,7 +52,7 @@ namespace Neo.UI
                 sb.EmitAppCall(scriptHash, "queryInflationRate");
                 sb.EmitAppCall(scriptHash, "queryInflationStartTime");
                 sb.EmitAppCall(scriptHash, "totalToken");
-                sb.EmitAppCall(scriptHash, "icoToken");
+                sb.EmitAppCall(scriptHash, "queryInflationToken");
                 sb.EmitAppCall(scriptHash, "icoNeo");
                 sb.EmitAppCall(scriptHash, "symbol");
                 script = sb.ToArray();
@@ -71,10 +71,10 @@ namespace Neo.UI
                 BigDecimal icoNeo = new BigDecimal(_icoNeo, asset.Decimals);
                 this.txtbx_icoNeo.Text = icoNeo.ToString();
 
-                //icoToken
-                BigInteger _icoToken = engine.EvaluationStack.Pop().GetBigInteger();
-                BigDecimal icoToken = new BigDecimal(_icoToken, asset.Decimals);
-                this.txtbx_icoToken.Text = icoToken.ToString();
+                //inflationToken
+                BigInteger _inflationToken = engine.EvaluationStack.Pop().GetBigInteger();
+                BigDecimal inflationToken = new BigDecimal(_inflationToken, asset.Decimals);
+                this.txtbx_inflationToken.Text = inflationToken.ToString();
 
                 //totalToken
                 BigInteger _totalToken = engine.EvaluationStack.Pop().GetBigInteger();
