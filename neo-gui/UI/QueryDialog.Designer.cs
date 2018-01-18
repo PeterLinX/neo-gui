@@ -33,6 +33,8 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.txtbx_icoNeo = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.txtbx_name = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.txtbx_precision = new System.Windows.Forms.TextBox();
@@ -56,8 +58,8 @@
             this.txtbx_address = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.CheckBalance = new System.Windows.Forms.Button();
-            this.label12 = new System.Windows.Forms.Label();
-            this.txtbx_icoNeo = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.txtbx_inflationTime = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -86,6 +88,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.txtbx_inflationTime);
+            this.groupBox2.Controls.Add(this.label13);
             this.groupBox2.Controls.Add(this.txtbx_icoNeo);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.txtbx_name);
@@ -108,6 +112,17 @@
             resources.ApplyResources(this.groupBox2, "groupBox2");
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.TabStop = false;
+            // 
+            // txtbx_icoNeo
+            // 
+            resources.ApplyResources(this.txtbx_icoNeo, "txtbx_icoNeo");
+            this.txtbx_icoNeo.Name = "txtbx_icoNeo";
+            this.txtbx_icoNeo.ReadOnly = true;
+            // 
+            // label12
+            // 
+            resources.ApplyResources(this.label12, "label12");
+            this.label12.Name = "label12";
             // 
             // txtbx_name
             // 
@@ -243,16 +258,16 @@
             this.CheckBalance.UseVisualStyleBackColor = true;
             this.CheckBalance.Click += new System.EventHandler(this.CheckBalance_Click);
             // 
-            // label12
+            // label13
             // 
-            resources.ApplyResources(this.label12, "label12");
-            this.label12.Name = "label12";
+            resources.ApplyResources(this.label13, "label13");
+            this.label13.Name = "label13";
             // 
-            // txtbx_icoNeo
+            // txtbx_inflationTime
             // 
-            resources.ApplyResources(this.txtbx_icoNeo, "txtbx_icoNeo");
-            this.txtbx_icoNeo.Name = "txtbx_icoNeo";
-            this.txtbx_icoNeo.ReadOnly = true;
+            resources.ApplyResources(this.txtbx_inflationTime, "txtbx_inflationTime");
+            this.txtbx_inflationTime.Name = "txtbx_inflationTime";
+            this.txtbx_inflationTime.ReadOnly = true;
             // 
             // QueryDialog
             // 
@@ -303,5 +318,7 @@
         private System.Windows.Forms.Button CheckBalance;
         private System.Windows.Forms.TextBox txtbx_icoNeo;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox txtbx_inflationTime;
+        private System.Windows.Forms.Label label13;
     }
 }

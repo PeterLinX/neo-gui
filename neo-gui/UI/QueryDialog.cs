@@ -48,6 +48,7 @@ namespace Neo.UI
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 sb.EmitAppCall(scriptHash, "totalSupply");
+                sb.EmitAppCall(scriptHash, "queryInflationTime");
                 sb.EmitAppCall(scriptHash, "queryInflationRate");
                 sb.EmitAppCall(scriptHash, "queryInflationStartTime");
                 sb.EmitAppCall(scriptHash, "totalToken");
@@ -88,6 +89,10 @@ namespace Neo.UI
                 BigInteger iRate = engine.EvaluationStack.Pop().GetBigInteger();
                 double result = (double)iRate;
                 this.txtbx_inflationRate.Text = result.ToString();
+
+                //queryInflationTime
+                BigInteger inflationTime = engine.EvaluationStack.Pop().GetBigInteger();
+                this.txtbx_inflationTime.Text = ConvertIntDateTime((double)inflationTime).ToString();
 
                 //totalSupply
                 BigInteger _totalSupply = engine.EvaluationStack.Pop().GetBigInteger();
