@@ -305,7 +305,7 @@ namespace Neo.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Wallet files relocated. Old files have been auto-saved at:  的本地化字符串。
+        ///   Looks up a localized string similar to Wallet file relocated. New wallet file has been saved at: .
         /// </summary>
         internal static string MigrateWalletSucceedMessage {
             get {
