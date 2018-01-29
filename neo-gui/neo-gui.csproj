@@ -347,12 +347,6 @@
     <Compile Include="UI\ExecuteDialog.Designer.cs">
       <DependentUpon>ExecuteDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ICODialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ICODialog.Designer.cs">
-      <DependentUpon>ICODialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\ImportCustomContractDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -677,9 +671,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ExecuteDialog.zh-Hans.resx">
       <DependentUpon>ExecuteDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ICODialog.resx">
-      <DependentUpon>ICODialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ImportCustomContractDialog.es-ES.resx">
       <DependentUpon>ImportCustomContractDialog.cs</DependentUpon>
