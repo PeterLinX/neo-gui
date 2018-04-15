@@ -1,4 +1,5 @@
-﻿using Neo.Properties;
+﻿using Neo.Core;
+using Neo.Properties;
 using Neo.SmartContract;
 using Neo.VM;
 using Neo.Wallets;
@@ -34,7 +35,7 @@ namespace Neo.UI
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.scriptHash = UInt160.Parse(comboBox1.SelectedItem as string);
-            this.asset = new AssetDescriptor(this.scriptHash);
+            //this.asset = new AssetDescriptor(this.scriptHash);
         }
 
         private void Query_Click(object sender, EventArgs e)
@@ -99,16 +100,43 @@ namespace Neo.UI
 
         private void CheckBalance_Click(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedItem == null)
-            {
-                MessageBox.Show(Strings.ChooseScriptHash);
-                return;
-            }
-            UInt160 address = Wallet.ToScriptHash(txtbx_address.Text);
+            //if (comboBox1.SelectedItem == null)
+            //{
+            //    MessageBox.Show(Strings.ChooseScriptHash);
+            //    return;
+            //}
+            //UInt160 address = Wallet.ToScriptHash(txtbx_address.Text);
+            //byte[] script;
+            //using (ScriptBuilder sb = new ScriptBuilder())
+            //{
+            //    sb.EmitAppCall(scriptHash, "balanceOf", address);
+            //    script = sb.ToArray();
+            //}
+            //ApplicationEngine engine = ApplicationEngine.Run(script);
+            //if (!engine.State.HasFlag(VMState.FAULT))
+            //{
+            //    BigInteger _balance = engine.EvaluationStack.Pop().GetBigInteger();
+            //    BigDecimal balance = new BigDecimal(_balance, asset.Decimals);
+            //    this.txtbx_balance.Text = balance.ToString() + " " + asset.AssetName;
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Query Failed");
+            //}
+
+            //if (comboBox1.SelectedItem == null)
+            //{
+            //    MessageBox.Show(Strings.ChooseScriptHash);
+            //    return;
+            //}
+
+
+
+            UInt160 invoker = UInt160.Parse("0x21adfaf1192a2ef5d78433cd9ea2e8669181dbf5");
             byte[] script;
             using (ScriptBuilder sb = new ScriptBuilder())
             {
-                sb.EmitAppCall(scriptHash, "balanceOf", address);
+                sb.EmitAppCall(invoker, "balanceOf");
                 script = sb.ToArray();
             }
             ApplicationEngine engine = ApplicationEngine.Run(script);
@@ -116,12 +144,53 @@ namespace Neo.UI
             {
                 BigInteger _balance = engine.EvaluationStack.Pop().GetBigInteger();
                 BigDecimal balance = new BigDecimal(_balance, asset.Decimals);
-                this.txtbx_balance.Text = balance.ToString()+ " " + asset.AssetName;
+                this.txtbx_balance.Text = balance.ToString() + " " + asset.AssetName;
             }
             else
             {
                 MessageBox.Show("Query Failed");
             }
+
+            if (comboBox1.SelectedItem == null)
+            {
+                MessageBox.Show(Strings.ChooseScriptHash);
+                return;
+            }
+
+            //Transaction tx = this.GetTransaction();
+            //if (tx is InvocationTransaction itx)
+            //{
+            //    using (InvokeContractDialog dialog = new InvokeContractDialog(itx))
+            //    {
+            //        if (dialog.ShowDialog() != DialogResult.OK) return;
+            //        tx = dialog.GetTransaction();
+            //    }
+            //}
+            //Helper.SignAndShowInformation(tx);
         }
+
+        public Transaction GetTransaction()
+        {
+            string command = "add";
+            UInt160 invoker = UInt160.Parse("0x21adfaf1192a2ef5d78433cd9ea2e8669181dbf5");
+            UInt160 invokee = UInt160.Parse("0x925bdbae56643b27fe424a3634c714213bf89081");
+
+            byte[] script;
+            using (ScriptBuilder sb = new ScriptBuilder())
+            {
+                sb.EmitPush(2);
+                sb.EmitPush(1);
+                sb.EmitPush(invokee);
+                sb.EmitPush(command);
+                sb.EmitAppCall(invoker.ToArray());
+                script = sb.ToArray();
+            }
+
+            return Program.CurrentWallet.MakeTransaction(new InvocationTransaction
+            {
+                Script = script
+            });
+        }
+
     }
 }
