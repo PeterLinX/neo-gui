@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using VMArray = Neo.VM.Types.Array;
 
 namespace Neo.UI
 {
@@ -139,6 +140,8 @@ namespace Neo.UI
 
         private void Blockchain_PersistCompleted(object sender, Block block)
         {
+            if (IsDisposed) return;
+
             persistence_time = DateTime.UtcNow;
             if (Program.CurrentWallet != null)
             {
@@ -146,6 +149,7 @@ namespace Neo.UI
                 if (Program.CurrentWallet.GetCoins().Any(p => !p.State.HasFlag(CoinState.Spent) && p.Output.AssetId.Equals(Blockchain.GoverningToken.Hash)) == true)
                     balance_changed = true;
             }
+
             BeginInvoke(new Action(RefreshConfirmations));
         }
 
@@ -454,8 +458,12 @@ namespace Neo.UI
                         if (engine.State.HasFlag(VMState.FAULT)) continue;
                         string name = engine.EvaluationStack.Pop().GetString();
                         byte decimals = (byte)engine.EvaluationStack.Pop().GetBigInteger();
-                        BigInteger amount = engine.EvaluationStack.Pop().GetArray().Aggregate(BigInteger.Zero, (x, y) => x + y.GetBigInteger());
-                        if (amount == 0) continue;
+                        BigInteger amount = ((VMArray)engine.EvaluationStack.Pop()).Aggregate(BigInteger.Zero, (x, y) => x + y.GetBigInteger());
+                        if (amount == 0)
+                        {
+                            listView2.Items.RemoveByKey(script_hash.ToString());
+                            continue;
+                        }
                         BigDecimal balance = new BigDecimal(amount, decimals);
                         string value_text = balance.ToString();
                         if (listView2.Items.ContainsKey(script_hash.ToString()))
@@ -703,18 +711,11 @@ namespace Neo.UI
 
         private void 选举EToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            InvocationTransaction tx;
             using (ElectionDialog dialog = new ElectionDialog())
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                tx = dialog.GetTransaction();
+                Helper.SignAndShowInformation(dialog.GetTransaction());
             }
-            using (InvokeContractDialog dialog = new InvokeContractDialog(tx))
-            {
-                if (dialog.ShowDialog() != DialogResult.OK) return;
-                tx = dialog.GetTransaction();
-            }
-            Helper.SignAndShowInformation(tx);
         }
 
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -905,19 +906,12 @@ namespace Neo.UI
 
         private void voteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            InvocationTransaction tx;
             WalletAccount account = (WalletAccount)listView1.SelectedItems[0].Tag;
             using (VotingDialog dialog = new VotingDialog(account.ScriptHash))
             {
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                tx = dialog.GetTransaction();
+                Helper.SignAndShowInformation(dialog.GetTransaction());
             }
-            using (InvokeContractDialog dialog = new InvokeContractDialog(tx))
-            {
-                if (dialog.ShowDialog() != DialogResult.OK) return;
-                tx = dialog.GetTransaction();
-            }
-            Helper.SignAndShowInformation(tx);
         }
 
         private void 复制到剪贴板CToolStripMenuItem_Click(object sender, EventArgs e)
@@ -942,6 +936,7 @@ namespace Neo.UI
             if (Program.CurrentWallet is NEP6Wallet wallet)
                 wallet.Save();
             balance_changed = true;
+            check_nep5_balance = true;
         }
 
         private void contextMenuStrip2_Opening(object sender, CancelEventArgs e)
