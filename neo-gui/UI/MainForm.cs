@@ -1111,6 +1111,14 @@ namespace Neo.UI
                 case "inner":
                     tx = commandMethod(scriptHash, "inner");
                     break;
+                case "Register":
+                    tx = commandMethod(scriptHash, "Register");
+                    using (InflationRateDialog dialog = new InflationRateDialog(scriptHash))
+                    {
+                        if (dialog.ShowDialog() != DialogResult.OK) return;
+                        tx = dialog.GetTransaction();
+                    }
+                    break;
                 default:
                     tx = null;
                     break;

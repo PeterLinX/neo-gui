@@ -21,16 +21,39 @@ namespace Neo.UI
             this.scriptHash = scriptHash;
         }
 
+        //public Transaction GetTransaction()
+        //{
+        //    string command = "inflationRate";
+        //    UInt160 script_hash = UInt160.Parse(this.scriptHash);
+        //    string strRate = this.textBox1.Text;
+        //    double _iRate = double.Parse(strRate);
+        //    _iRate = Math.Floor(_iRate * multiplier);
+
+        //    BigInteger iRate = new BigInteger(_iRate);
+        //    object[] param = { iRate };
+        //    byte[] script;
+
+        //    using (ScriptBuilder sb = new ScriptBuilder())
+        //    {
+        //        sb.EmitAppCall(script_hash, command, param);
+        //        script = sb.ToArray();
+        //    }
+
+        //    return Program.CurrentWallet.MakeTransaction(new InvocationTransaction
+        //    {
+        //        Script = script
+        //    });
+        //}
+
         public Transaction GetTransaction()
         {
-            string command = "inflationRate";
+            string command = "register";
             UInt160 script_hash = UInt160.Parse(this.scriptHash);
-            string strRate = this.textBox1.Text;
-            double _iRate = double.Parse(strRate);
-            _iRate = Math.Floor(_iRate * multiplier);
-            
-            BigInteger iRate = new BigInteger(_iRate);
-            object[] param = { iRate };
+            string strOwner = this.textBox1.Text;
+
+
+            Byte[] owner = Wallet.ToScriptHash(strOwner).ToArray();
+            object[] param = { "test", owner  };
             byte[] script;
 
             using (ScriptBuilder sb = new ScriptBuilder())
