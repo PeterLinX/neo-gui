@@ -93,7 +93,7 @@ namespace Neo.UI
                 }
                 Fixed8 bonus_available = Blockchain.CalculateBonus(claims);
                 ClaimTransactionWrapper tx = (ClaimTransactionWrapper)wrapper;
-                for (int i = 0; i < 5000; i++)
+                for (int i = 0; i < claims.Length; i++)
                 {
                     tx.Claims.Add(new CoinReferenceWrapper
                     {
